@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#05060b">
+  <meta name="description" content="wallpaper播放器 · 本地 Wallpaper Engine 壁纸画廊">
+  <title>wallpaper播放器</title>
+  <script src="/theme-boot.js"></script>
+  <script src="/i18n.js"></script>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.14v13.72c0 .84.92 1.36 1.64.92l10.1-6.86a1.1 1.1 0 0 0 0-1.84L9.64 4.22A1.1 1.1 0 0 0 8 5.14Z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1.4"/><rect x="14" y="4" width="4" height="16" rx="1.4"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-volume-x" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path d="m17 9 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-maximize" viewBox="0 0 24 24"><path d="M4 9V5a1 1 0 0 1 1-1h4M20 9V5a1 1 0 0 0-1-1h-4M4 15v4a1 1 0 0 0 1 1h4M20 15v4a1 1 0 0 1-1 1h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-minimize" viewBox="0 0 24 24"><path d="M9 4v4a1 1 0 0 1-1 1H4M15 4v4a1 1 0 0 0 1 1h4M9 20v-4a1 1 0 0 0-1-1H4M15 20v-4a1 1 0 0 1 1-1h4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h4.1a2 2 0 0 1 1.6.8l1 1.3h6.3A2.5 2.5 0 0 1 21 9.6v7.9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5v-10Z"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5.5c0-.8.7-1.5 1.5-1.5h3c.8 0 1.5.7 1.5 1.5V7m3 0-.8 12.1a2 2 0 0 1-2 1.9H8.8a2 2 0 0 1-2-1.9L6 7m4 4v6m4-6v6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-move" viewBox="0 0 24 24"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h4.1a2 2 0 0 1 1.6.8l1 1.3h4.3A2.5 2.5 0 0 1 19 9.6v1.9M3 7.5v10A2.5 2.5 0 0 0 5.5 20h6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M15 19h6m-2.5-2.5L21 19l-2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.4 4.4L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 5v6h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-loop" viewBox="0 0 24 24"><path d="M17 3l3 3-3 3M20 6H8a4 4 0 0 0-4 4v1M7 21l-3-3 3-3M4 18h12a4 4 0 0 0 4-4v-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chevron-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 20V5m-6 6 6-6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3.5 22 20H2L12 3.5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9v5m0 3v.1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 7v5.4l3.5 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7.5 3v4m9-4v4M3.5 10h17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8.5" ry="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 5.5v6c0 1.8 3.8 3.2 8.5 3.2s8.5-1.4 8.5-3.2v-6M3.5 11.5v6c0 1.8 3.8 3.2 8.5 3.2s8.5-1.4 8.5-3.2v-6" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 4v16M17 4v16M3 9h4m10 0h4M3 15h4m10 0h4" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8.5" cy="9.5" r="1.6" fill="currentColor"/><path d="m4.5 18 5-5 3.4 3.2 2.8-2.6 3.8 4.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5Zm9 9-9 5-9-5m18 4-9 5-9-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3.5 12h17M12 3c2.5 2.5 3.8 5.6 3.8 9S14.5 18.5 12 21M12 3C9.5 5.5 8.2 8.6 8.2 12s1.3 6.5 3.8 9" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+    <symbol id="i-app" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M7 6.5v.1M10 6.5v.1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24"><path d="m12 3 8.5 4.8v8.4L12 21l-8.5-4.8V7.8L12 3Zm0 9 8.5-4.8M12 12 3.5 7.2M12 12v9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="i-drive" viewBox="0 0 24 24"><rect x="3" y="13" width="18" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m5.5 13 2-7h9l2 7M7 16.5h.1M11 16.5h.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m4 10 8-6.5 8 6.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 19v-9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.5 20v-6h5v6" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3.5 13.8 9l5.5 1.8-5.5 1.8L12 18l-1.8-5.4-5.5-1.8L10.2 9 12 3.5ZM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z" fill="currentColor"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 10.5V17m0-9.5v.1" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-loader" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+    <symbol id="i-select" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="3 3"/><path d="m8 12 2.8 2.8L16.5 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-folder-open" viewBox="0 0 24 24"><path d="M3 8V6.5A1.5 1.5 0 0 1 4.5 5h5l2 2h8A1.5 1.5 0 0 1 21 8.5V10M3.5 10h17.2a1 1 0 0 1 1 1.2l-1.5 7a2 2 0 0 1-2 1.8H5.3a2 2 0 0 1-2-1.7L2.5 11a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15.5 15.5 5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5C5.73.5.75 5.48.75 11.75c0 4.98 3.23 9.2 7.72 10.69.56.1.77-.24.77-.54 0-.27-.01-1.16-.02-2.1-3.14.68-3.8-1.33-3.8-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.16 1.72 1.16 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.71-1.5-2.51-.29-5.15-1.26-5.15-5.6 0-1.24.44-2.25 1.16-3.04-.12-.29-.5-1.44.11-3 0 0 .95-.3 3.11 1.16.9-.25 1.86-.37 2.82-.37.96 0 1.92.12 2.82.37 2.16-1.46 3.11-1.16 3.11-1.16.61 1.56.23 2.71.11 3 .72.79 1.16 1.8 1.16 3.04 0 4.35-2.65 5.31-5.17 5.59.4.35.76 1.03.76 2.08 0 1.5-.01 2.71-.01 3.08 0 .3.2.65.78.54 4.49-1.49 7.72-5.71 7.72-10.69C23.25 5.48 18.27.5 12 .5Z"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Zm8.3 3.8c0-.5-.05-1-.13-1.47l2.05-1.6-2-3.46-2.42.98a8.1 8.1 0 0 0-2.54-1.47L14.9 2h-4l-.37 2.98A8.1 8.1 0 0 0 8 6.45l-2.42-.98-2 3.46 2.05 1.6a7 7 0 0 0 0 2.94l-2.05 1.6 2 3.46 2.42-.98a8.1 8.1 0 0 0 2.54 1.47L10.9 22h4l.37-2.98a8.1 8.1 0 0 0 2.54-1.47l2.42.98 2-3.46-2.05-1.6c.08-.47.13-.97.13-1.47Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v2M12 19.5v2M21.5 12h-2M4.5 12h-2M18.7 5.3l-1.4 1.4M6.7 17.3l-1.4 1.4M18.7 18.7l-1.4-1.4M6.7 6.7 5.3 5.3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.3 14.1A8.5 8.5 0 0 1 9.9 3.7 8.8 8.8 0 1 0 20.3 14.1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 21h8m-4-4v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <div class="aurora" aria-hidden="true">
+    <span class="grain"></span>
+  </div>
+
+  <header class="topbar">
+    <a class="brand" href="#" id="brandBtn" aria-label="返回壁纸画廊">
+      <span class="brand-copy">
+        <span class="brand-title">wallpaper播放器</span>
+        <span class="brand-sub" id="sourceLine">正在定位壁纸库…</span>
+      </span>
+    </a>
+    <label class="top-search" for="searchInput">
+      <svg class="icon"><use href="#i-search"></use></svg>
+      <input id="searchInput" type="search" autocomplete="off" spellcheck="false" placeholder="搜索壁纸名称…" aria-label="按壁纸名称搜索">
+    </label>
+    <div class="top-actions">
+      <button class="settings-link" id="settingsBtn" type="button" title="设置">
+        <svg class="icon"><use href="#i-settings"></use></svg><span>设置</span>
+      </button>
+      <a class="github-link" href="https://github.com/xdedmmc2/Wallpaper-Engine-player/tree/main" target="_blank" rel="noopener noreferrer" title="前往 GitHub 仓库">
+        <svg class="icon"><use href="#i-github"></use></svg><span>GitHub</span>
+      </a>
+      <button class="theme-toggle" id="themeToggle" type="button" title="切换到白天">
+        <svg class="icon"><use href="#i-sun"></use></svg>
+      </button>
+      <span class="version-badge" title="当前版本 5.2.1">v5.2.1</span>
+      <label class="switch" title="打开后视频播放到结尾会循环">
+        <input type="checkbox" id="loopToggle">
+        <span class="switch-track"><span></span></span>
+        <span class="switch-label"><svg class="icon"><use href="#i-loop"></use></svg>循环播放</span>
+      </label>
+      <button class="btn ghost" id="rescanBtn" type="button">
+        <svg class="icon"><use href="#i-refresh"></use></svg>
+        <span>重新扫描</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="toolbar" aria-label="筛选与排序">
+    <div class="filter-tabs" id="filterTabs" role="tablist"></div>
+    <div class="toolbar-right">
+      <label class="sort-field page-size-field">
+        <span>每页</span>
+        <select id="pageSizeSelect" aria-label="每页显示数量">
+          <option value="10">10 张</option>
+          <option value="20">20 张</option>
+          <option value="30" selected>30 张</option>
+          <option value="50">50 张</option>
+          <option value="100">100 张</option>
+        </select>
+      </label>
+      <label class="sort-field">
+        <span>排序</span>
+        <select id="sortSelect" aria-label="排序方式">
+          <option value="new">下载时间（新 → 旧）</option>
+          <option value="old">下载时间（旧 → 新）</option>
+          <option value="created-new">创建日期（新 → 旧）</option>
+          <option value="created-old">创建日期（旧 → 新）</option>
+          <option value="size-desc">文件大小（大 → 小）</option>
+          <option value="size-asc">文件大小（小 → 大）</option>
+          <option value="title">标题</option>
+          <option value="folder">文件夹 ID</option>
+          <option value="file">文件名</option>
+        </select>
+      </label>
+      <span class="result-count" id="resultCount">—</span>
+    </div>
+  </section>
+
+  <main class="main" id="main">
+    <div class="skeleton-grid" id="skeleton" aria-hidden="true">
+      <div class="sk-card"><div class="sk-media"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+      <div class="sk-card"><div class="sk-media"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+      <div class="sk-card"><div class="sk-media"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+      <div class="sk-card"><div class="sk-media"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+      <div class="sk-card"><div class="sk-media"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+      <div class="sk-card"><div class="sk-media"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+      <div class="sk-card"><div class="sk-media"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+      <div class="sk-card"><div class="sk-media"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+    </div>
+
+    <div class="gallery" id="gallery"></div>
+
+    <nav class="pagination" id="pagination" aria-label="壁纸分页" hidden>
+      <button class="page-btn" id="pagePrev" type="button">上一页</button>
+      <div class="page-numbers" id="pageNumbers"></div>
+      <button class="page-btn" id="pageNext" type="button">下一页</button>
+      <span class="page-status" id="pageStatus"></span>
+      <div class="page-jump">
+        <span>跳转到</span>
+        <input id="pageJumpInput" type="number" min="1" step="1" inputmode="numeric" aria-label="跳转到指定页">
+        <span>页</span>
+        <button class="page-btn page-jump-btn" id="pageJumpBtn" type="button">跳转</button>
+      </div>
+    </nav>
+
+    <section class="empty-state" id="emptyState" hidden>
+      <div class="empty-orb"><svg class="icon"><use href="#i-sparkles"></use></svg></div>
+      <h2 id="emptyTitle">还没有发现壁纸</h2>
+      <p id="emptyText">请确认 Wallpaper Engine 已安装，或点击下方按钮重新扫描。</p>
+      <p class="empty-hint" id="emptyHint">可在设置中手动选择文件夹路径</p>
+      <button class="btn primary" id="emptyRescan" type="button"><svg class="icon"><use href="#i-refresh"></use></svg>重新尝试扫描 wallpaper 文件夹地址</button>
+    </section>
+  </main>
+
+  <div class="inline-player" id="inlinePlayer" hidden>
+    <video id="inlineVideo" playsinline preload="metadata"></video>
+    <div class="inline-shade"></div>
+    <button class="inline-close" id="inlineClose" type="button" aria-label="关闭播放"><svg class="icon"><use href="#i-x"></use></svg></button>
+    <div class="inline-error" id="inlineError" hidden>
+      <svg class="icon"><use href="#i-alert"></use></svg>
+      <p id="inlineErrorText"></p>
+      <div class="inline-error-actions">
+        <button class="btn small ghost" id="inlineRetry" type="button"><svg class="icon"><use href="#i-refresh"></use></svg>重试</button>
+        <button class="btn small primary" id="inlineSystem" type="button"><svg class="icon"><use href="#i-play"></use></svg>系统播放</button>
+        <button class="btn small ghost" id="inlineErrorClose" type="button">关闭</button>
+      </div>
+    </div>
+    <div class="inline-controls" id="inlineControls">
+      <input class="inline-seek" id="inlineSeek" type="range" min="0" max="1000" value="0" step="1" aria-label="播放进度">
+      <div class="inline-row">
+        <button class="icon-btn" id="inlinePlay" type="button" aria-label="播放"><svg class="icon"><use href="#i-play"></use></svg></button>
+        <span class="inline-time" id="inlineTime">0:00 / 0:00</span>
+        <span class="inline-spacer"></span>
+        <button class="icon-btn" id="inlineMute" type="button" aria-label="静音"><svg class="icon"><use href="#i-volume"></use></svg></button>
+        <button class="icon-btn" id="inlineFullscreen" type="button" aria-label="打开全屏播放页" title="打开全屏播放页"><svg class="icon"><use href="#i-maximize"></use></svg></button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    <span><b>拖动页面空白处框选</b> · 点击卡片播放 · 悬停视频静音预览</span>
+    <span id="footerStats"></span>
+    <div class="footer-links" aria-label="作者主页链接">
+      <a href="https://github.com/xdedmmc2/Wallpaper-Engine-player/tree/main" target="_blank" rel="noopener noreferrer">GitHub 发布页</a>
+      <span class="footer-sep" aria-hidden="true">·</span>
+      <a href="https://github.com/xdedmmc2" target="_blank" rel="noopener noreferrer">GitHub 个人主页</a>
+      <span class="footer-sep" aria-hidden="true">·</span>
+      <a href="https://space.bilibili.com/598986396?spm_id_from=333.1007.0.0" target="_blank" rel="noopener noreferrer">B站个人主页</a>
+    </div>
+  </footer>
+
+  <div class="batch-bar" id="selectionBar" hidden>
+    <div class="batch-count"><span class="batch-dot"></span><strong id="selectedCount">0</strong><span>项已选中</span></div>
+    <div class="batch-actions">
+      <button class="btn small ghost" id="selectAllBtn" type="button">全选当前</button>
+      <button class="btn small ghost" id="clearSelectionBtn" type="button">清除</button>
+      <span class="batch-sep"></span>
+      <button class="btn small" id="batchMoveBtn" type="button"><svg class="icon"><use href="#i-move"></use></svg>批量移动</button>
+      <button class="btn small danger" id="batchDeleteBtn" type="button"><svg class="icon"><use href="#i-trash"></use></svg>批量删除</button>
+    </div>
+  </div>
+
+  <div class="marquee" id="marquee" hidden></div>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <section class="route-page player-page" id="playerPage" hidden aria-label="壁纸播放页">
+    <div class="route-scroll">
+      <header class="route-header">
+        <button class="icon-btn" id="playerBack" type="button" aria-label="返回"><svg class="icon"><use href="#i-chevron-left"></use></svg></button>
+        <div class="route-heading">
+          <span class="eyebrow" id="playerEyebrow">WALLPAPER</span>
+          <h1 id="playerTitle" data-i18n-skip>—</h1>
+        </div>
+        <span class="type-pill" id="playerType">视频</span>
+      </header>
+
+      <section class="player-stage" id="playerStage">
+        <img id="playerImage" alt="" hidden>
+        <video id="playerVideo" playsinline preload="metadata" hidden></video>
+        <div class="unsupported-panel" id="playerUnsupported" hidden>
+          <span class="unsupported-icon"><svg class="icon"><use href="#i-alert"></use></svg></span>
+          <h3 id="unsupportedTitle">无法在浏览器中播放</h3>
+          <p id="unsupportedText"></p>
+        </div>
+        <div class="player-error" id="playerError" hidden>
+          <span class="error-icon"><svg class="icon"><use href="#i-alert"></use></svg></span>
+          <h3>视频解码失败</h3>
+          <p id="playerErrorText">浏览器无法解码该视频。</p>
+          <div class="error-actions">
+            <button class="btn small ghost" id="playerRetry" type="button"><svg class="icon"><use href="#i-refresh"></use></svg>重新尝试解码</button>
+            <button class="btn small primary" id="playerExternalPlay" type="button"><svg class="icon"><use href="#i-play"></use></svg>系统播放</button>
+            <button class="btn small ghost" id="playerRevealFromError" type="button"><svg class="icon"><use href="#i-folder-open"></use></svg>打开文件夹</button>
+          </div>
+        </div>
+        <div class="video-shade" id="videoShade"></div>
+        <button class="big-play" id="bigPlay" type="button" aria-label="播放"><svg class="icon"><use href="#i-play"></use></svg></button>
+        <div class="stage-spinner" id="stageSpinner" hidden><svg class="icon spin"><use href="#i-loader"></use></svg></div>
+        <div class="player-controls" id="playerControls">
+          <input class="seek" id="seekBar" type="range" min="0" max="1000" value="0" step="1" aria-label="播放进度">
+          <!-- GitHub作者主页 github.com/xdedmmc2 -->
+          <div class="controls-row">
+            <button class="icon-btn" id="playToggle" type="button" aria-label="播放"><svg class="icon"><use href="#i-play"></use></svg></button>
+            <div class="timecode"><span id="curTime">0:00</span><span class="time-sep">/</span><span id="durTime">0:00</span></div>
+            <div class="controls-spacer"></div>
+            <span class="loop-indicator" id="loopIndicator"><svg class="icon"><use href="#i-loop"></use></svg>循环</span>
+            <button class="icon-btn" id="muteToggle" type="button" aria-label="静音"><svg class="icon"><use href="#i-volume"></use></svg></button>
+            <input class="volume" id="volumeBar" type="range" min="0" max="100" value="80" aria-label="音量">
+            <button class="icon-btn" id="fullscreenBtn" type="button" aria-label="全屏"><svg class="icon"><use href="#i-maximize"></use></svg></button>
+          </div>
+        </div>
+        <div class="stage-hint" id="stageHint">双击画面全屏 · 空格播放/暂停</div>
+      </section>
+
+      <div class="player-meta" id="playerMeta"></div>
+
+      <section class="player-note callout" id="playerWarning" hidden>
+        <svg class="icon"><use href="#i-alert"></use></svg>
+        <div><strong>播放提示</strong><p id="playerWarningText"></p></div>
+      </section>
+
+      <section class="player-description" id="descriptionBox" hidden>
+        <h3>壁纸说明</h3>
+        <p id="playerDescription" data-i18n-skip></p>
+        <div class="tag-row" id="playerTags" data-i18n-skip></div>
+      </section>
+
+      <section class="player-actions" aria-label="壁纸操作">
+        <button class="action-btn" data-action="reveal" type="button"><span class="action-ico"><svg class="icon"><use href="#i-folder-open"></use></svg></span><span><b>打开文件夹</b><small>在资源管理器中定位</small></span></button>
+        <button class="action-btn danger" data-action="delete" type="button"><span class="action-ico"><svg class="icon"><use href="#i-trash"></use></svg></span><span><b>删除</b><small>从本地磁盘移除</small></span></button>
+        <button class="action-btn" data-action="move" type="button"><span class="action-ico"><svg class="icon"><use href="#i-move"></use></svg></span><span><b>移动</b><small>移动到其他文件夹</small></span></button>
+        <button class="action-btn" data-action="select" type="button"><span class="action-ico"><svg class="icon"><use href="#i-select"></use></svg></span><span><b>选中</b><small id="selectActionHint">加入批量操作</small></span></button>
+      </section>
+    </div>
+  </section>
+
+  <section class="route-page move-page" id="movePage" hidden aria-label="选择移动目标文件夹">
+    <div class="move-shell">
+      <header class="route-header">
+        <button class="icon-btn" id="moveBack" type="button" aria-label="返回"><svg class="icon"><use href="#i-chevron-left"></use></svg></button>
+        <div class="route-heading">
+          <span class="eyebrow" id="moveEyebrow">移动 1 个壁纸</span>
+          <h1>选择目标文件夹</h1>
+        </div>
+        <button class="icon-btn" id="folderRefresh" type="button" aria-label="刷新文件夹"><svg class="icon"><use href="#i-refresh"></use></svg></button>
+      </header>
+
+      <div class="move-body">
+        <aside class="move-sidebar">
+          <div class="side-group">
+            <h3>此电脑</h3>
+            <div id="driveList"></div>
+          </div>
+          <div class="side-group">
+            <h3>快捷访问</h3>
+            <div id="shortcutList"></div>
+          </div>
+          <div class="side-tip">
+            <svg class="icon"><use href="#i-info"></use></svg>
+            <p>目标文件夹只作为父目录。壁纸会以标题命名放入其中。</p>
+          </div>
+        </aside>
+
+        <section class="folder-pane">
+          <div class="path-bar">
+            <button class="icon-btn small" id="folderUp" type="button" aria-label="上一级"><svg class="icon"><use href="#i-arrow-up"></use></svg></button>
+            <div class="breadcrumbs" id="breadcrumbs"></div>
+          </div>
+          <div class="folder-list" id="folderList"></div>
+          <div class="folder-empty" id="folderEmpty" hidden>
+            <svg class="icon"><use href="#i-folder"></use></svg>
+            <p>此文件夹没有子文件夹</p>
+          </div>
+          <div class="folder-loading" id="folderLoading" hidden><svg class="icon spin"><use href="#i-loader"></use></svg><span>正在读取…</span></div>
+        </section>
+      </div>
+
+      <footer class="move-footer">
+        <div class="move-target-row">
+          <div class="move-target">
+            <span>目标位置</span>
+            <strong id="targetPath">—</strong>
+          </div>
+          <button class="btn primary" id="moveConfirm" type="button"><svg class="icon"><use href="#i-move"></use></svg>移动到此处</button>
+        </div>
+        <div class="move-options-row">
+          <label class="checkline" title="勾选后使用壁纸标题或原文件名重命名">
+            <input type="checkbox" id="renameCheck" checked>
+            <span class="checkbox-ui"><svg class="icon"><use href="#i-check"></use></svg></span>
+            <span>移动时重命名文件夹</span>
+          </label>
+          <label class="checkline" title="仅对视频或图片壁纸生效">
+            <input type="checkbox" id="onlyFileCheck">
+            <span class="checkbox-ui"><svg class="icon"><use href="#i-check"></use></svg></span>
+            <span>仅移动壁纸主文件</span>
+          </label>
+          <label class="checkline" title="仅移动主文件时生效；关闭后会保留预览、project.json 等原文件夹内容">
+            <input type="checkbox" id="deleteSourceCheck" checked>
+            <span class="checkbox-ui"><svg class="icon"><use href="#i-check"></use></svg></span>
+            <span>删除原文件夹</span>
+          </label>
+        </div>
+        <div class="only-file-note" id="onlyFileNote"></div>
+      </footer>
+    </div>
+  </section>
+
+  <div class="settings-layer" id="settingsLayer" hidden>
+    <div class="settings-backdrop" data-settings-close></div>
+    <section class="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <header class="settings-header">
+        <div>
+          <span class="eyebrow">SETTINGS</span>
+          <h2 id="settingsTitle">设置</h2>
+        </div>
+        <button class="icon-btn" id="settingsClose" type="button" aria-label="关闭设置"><svg class="icon"><use href="#i-x"></use></svg></button>
+      </header>
+      <nav class="settings-tabs" aria-label="设置分类">
+        <button class="settings-tab active" id="settingsTabGeneral" data-settings-tab="general" type="button">常规设置</button>
+        <button class="settings-tab" id="settingsTabAbout" data-settings-tab="about" type="button">关于</button>
+      </nav>
+      <div class="settings-body">
+        <section class="settings-section" id="settingsGeneral">
+          <div class="settings-theme-row settings-language-row">
+            <div>
+              <span class="settings-label">语言</span>
+              <p class="settings-hint">界面语言，切换后页面会刷新。</p>
+            </div>
+            <label class="language-field">
+              <select class="language-select" id="languageSelect" aria-label="界面语言">
+                <option value="zh">中文</option>
+                <option value="en">English</option>
+              </select>
+            </label>
+          </div>
+          <div class="settings-theme-row">
+            <div>
+              <span class="settings-label">外观模式</span>
+              <p class="settings-hint">默认跟随系统，可随时在主界面右上角快速切换白天/黑夜。</p>
+            </div>
+            <div class="theme-segment" id="themeSegment" role="group" aria-label="外观模式">
+              <button class="theme-segment-btn" type="button" data-theme-mode="system"><svg class="icon"><use href="#i-monitor"></use></svg>跟随系统</button>
+              <button class="theme-segment-btn" type="button" data-theme-mode="light"><svg class="icon"><use href="#i-sun"></use></svg>白天</button>
+              <button class="theme-segment-btn" type="button" data-theme-mode="dark"><svg class="icon"><use href="#i-moon"></use></svg>黑夜</button>
+            </div>
+          </div>
+          <label class="settings-label" for="settingsPathInput">壁纸 / 媒体文件夹路径</label>
+          <div class="settings-path-row">
+            <div class="settings-path-wrap">
+              <input class="settings-path-input" id="settingsPathInput" type="text" autocomplete="off" spellcheck="false" placeholder="例如 D:\SteamLibrary\steamapps\workshop\content\431960">
+              <div class="path-history" id="settingsHistory" hidden></div>
+            </div>
+            <button class="btn ghost" id="settingsBrowse" type="button"><svg class="icon"><use href="#i-folder-open"></use></svg>浏览…</button>
+          </div>
+          <p class="settings-hint">右键任意订阅的壁纸，选择“在资源管理器中打开”，然后选择上一级文件夹，复制文件夹路径（文件夹名通常为 431960）。</p>
+          <p class="settings-hint">也可以选择普通视频/图片文件夹。只扫描当前文件夹一层：根目录中的媒体文件，以及直接子文件夹中的壁纸文件。</p>
+          <!-- GitHub发布页 github.com/xdedmmc2/Wallpaper-Engine-player -->
+          <div class="settings-current-row">
+            <span>当前扫描位置</span>
+            <strong id="settingsCurrent">自动检测</strong>
+          </div>
+          <div class="settings-actions">
+            <button class="btn primary" id="settingsApply" type="button">应用并扫描</button>
+            <button class="btn ghost" id="settingsReset" type="button">恢复自动检测</button>
+          </div>
+          <p class="settings-message" id="settingsMessage" hidden></p>
+
+          <div class="settings-browser" id="settingsBrowser" hidden>
+            <header class="settings-browser-head">
+              <button class="icon-btn small" id="settingsBrowserUp" type="button" aria-label="上一级"><svg class="icon"><use href="#i-chevron-left"></use></svg></button>
+              <strong id="settingsBrowserPath">—</strong>
+              <button class="icon-btn small" id="settingsBrowserClose" type="button" aria-label="关闭浏览"><svg class="icon"><use href="#i-x"></use></svg></button>
+            </header>
+            <div class="settings-browser-shortcuts" id="settingsBrowserShortcuts"></div>
+            <div class="settings-browser-list" id="settingsBrowserList"></div>
+            <footer class="settings-browser-actions">
+              <button class="btn ghost" id="settingsBrowserCancel" type="button">取消</button>
+              <button class="btn primary" id="settingsBrowserSelect" type="button">选择此文件夹</button>
+            </footer>
+          </div>
+        </section>
+
+        <section class="settings-section settings-about" id="settingsAbout" hidden>
+          <span class="about-mark"><svg class="icon"><use href="#i-sparkles"></use></svg></span>
+          <h3>wallpaper播放器</h3>
+          <p class="about-version">当前版本 <b id="aboutVersion">v5.2.1</b></p>
+          <div class="about-links">
+            <a href="https://github.com/xdedmmc2/Wallpaper-Engine-player/tree/main" target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#i-github"></use></svg>GitHub 发布页</a>
+            <a href="https://github.com/xdedmmc2" target="_blank" rel="noopener noreferrer"><svg class="icon"><use href="#i-github"></use></svg>GitHub 作者主页</a>
+          </div>
+          <p class="settings-hint">本地运行，不上传壁纸、路径或使用数据。与 Wallpaper Engine、Steam、Valve 无官方关联。</p>
+        </section>
+      </div>
+    </section>
+  </div>
+
+  <div class="dialog-layer" id="dialogLayer" hidden>
+    <div class="dialog-backdrop" data-dialog-cancel></div>
+    <div class="dialog-card" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+      <span class="dialog-icon" id="dialogIcon"><svg class="icon"><use href="#i-alert"></use></svg></span>
+      <span class="eyebrow" id="dialogEyebrow">请确认</span>
+      <h2 id="dialogTitle">确认操作</h2>
+      <p class="dialog-text" id="dialogText"></p>
+      <div class="dialog-warning" id="dialogWarning" hidden>
+        <svg class="icon"><use href="#i-alert"></use></svg>
+        <p id="dialogWarningText"></p>
+      </div>
+      <div class="dialog-detail" id="dialogDetail" hidden></div>
+      <div class="dialog-stage-two" id="dialogStageTwo" hidden>
+        <strong>不可撤销的操作</strong>
+        <p>此操作会立即执行，且无法撤销。请确认你已了解上面的风险。</p>
+      </div>
+      <footer class="dialog-actions">
+        <button class="btn ghost" id="dialogSecondary" type="button" hidden>打开目标文件夹</button>
+        <button class="btn ghost" id="dialogCancel" type="button">取消</button>
+        <button class="btn danger" id="dialogConfirm" type="button">继续</button>
+      </footer>
+    </div>
+  </div>
+
+  <div class="compare-layer" id="compareLayer" hidden>
+    <div class="compare-backdrop"></div>
+    <div class="compare-panel">
+      <header class="compare-header">
+        <div>
+          <span class="eyebrow" id="compareEyebrow">同名冲突</span>
+          <h2>重名文件对比</h2>
+          <!-- GitHub作者主页 github.com/xdedmmc2 -->
+          <p id="compareProgress">1 / 1</p>
+        </div>
+        <button class="icon-btn" id="compareClose" type="button" aria-label="取消移动"><svg class="icon"><use href="#i-x"></use></svg></button>
+      </header>
+      <div class="compare-grid">
+        <article class="compare-card" id="compareSource"></article>
+        <article class="compare-card" id="compareTarget"></article>
+      </div>
+      <p class="compare-note">左侧是待移动的壁纸，右侧是目标文件夹中已有的同名文件。请选择如何处理。“删除源壁纸”会删除左侧整个壁纸文件夹；“覆盖目标”会替换右侧目标。</p>
+      <footer class="compare-actions">
+        <button class="btn ghost" id="compareCancel" type="button">取消本次移动</button>
+        <div class="compare-decision">
+          <button class="btn danger" id="compareDelete" type="button">删除源壁纸</button>
+          <button class="btn primary" id="compareOverwrite" type="button">覆盖目标</button>
+          <button class="btn" id="compareSkip" type="button">跳过</button>
+        </div>
+      </footer>
+    </div>
+  </div>
+
+  <div class="loading-cover" id="loadingCover" hidden>
+    <div class="loading-box"><svg class="icon spin"><use href="#i-loader"></use></svg><span id="loadingText">正在处理…</span></div>
+  </div>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
