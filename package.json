@@ -1,0 +1,13 @@
+{
+  "name": "wallpaper-player",
+  "version": "5.2.1",
+  "private": true,
+  "description": "wallpaper播放器 · 本地 Wallpaper Engine 壁纸画廊与播放器",
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs --auto-exit"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
